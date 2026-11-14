@@ -1,0 +1,58 @@
+# ==========================================
+# Cardiastracont .gitignore
+# NASA Space Apps Challenge 2026
+# ==========================================
+
+# 1. Environment variables & Secret API Keys (DO NOT COMMIT)
+.env
+*.env
+.env.*
+backend/.env
+backend/*.env
+!.env.example
+!backend/.env.example
+
+# 2. Python Bytecode, Compilations & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# 3. Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 4. Operating System & Editor Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 5. Temporary & Log Files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# 6. Unity / Xcode Temporary Build Files (Keep source, ignore build outputs)
+[Bb]uild/
+[Bb]uilds/
+*.apk
+*.aab
+*.ipa
+.gradle/
+DerivedData/
+*.xcuserstate
+

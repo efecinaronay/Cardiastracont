@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Cardiastracont | Deep-Space Health Command Center & AI Flight Surgeon</title>
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#070b14">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation & Mission Status Header -->
+  <header>
+    <div class="brand">
+      <span class="brand-icon">🛰️</span>
+      <div class="brand-text">
+        <h1>Cardiastracont</h1>
+        <p>AUTONOMIC SPACE HEALTH AGENT</p>
+      </div>
+    </div>
+
+    <!-- Mobile View Tab Switcher (Visible on small screens) -->
+    <div class="mobile-tab-switch">
+      <button id="tab-btn-vitals" class="tab-btn active">📊 VITALS</button>
+      <button id="tab-btn-chat" class="tab-btn">💬 AI SURGEON</button>
+    </div>
+
+    <div class="header-controls">
+      <div id="link-status-dot" class="status-badge connecting">
+        <span class="status-dot"></span>
+        <span id="link-status-text">CONNECTING...</span>
+        <span id="latency-badge" style="opacity: 0.8; font-size: 0.65rem;">--ms</span>
+      </div>
+
+      <button id="btn-open-latency" class="btn btn-header-tool" title="Earth-Mars Speed of Light Comms Delay Simulator">
+        ⏱️ DELAY: <span id="hdr-delay-val">14m</span>
+      </button>
+
+      <button id="btn-open-emk" class="btn btn-header-tool" title="Emergency Medical Kit & Space Radiation Drug Potency">
+        💊 MED KIT (EMK)
+      </button>
+
+      <button id="btn-export-log" class="btn btn-header-tool" title="Generate Official NASA Form 1042 Clinical Mission Report">
+        📋 MISSION LOG
+      </button>
+
+      <button id="btn-open-sanctuary" class="btn btn-sanctuary">
+        🧘 SANCTUARY
+      </button>
+
+      <button id="btn-emergency-sos" class="btn btn-emergency">
+        🚨 EMERGENCY SOS
+      </button>
+    </div>
+  </header>
+
+  <!-- Dual-Column Master Dashboard Layout -->
+  <div class="dashboard-layout">
+
+    <!-- LEFT COLUMN: Biometrics, Anomaly Triage, Charts & Adaptive Controls -->
+    <main id="view-vitals" class="dashboard-main">
+
+      <!-- AI Triage Alert Window (Pops up on anomaly) -->
+      <section id="ai-triage-panel" class="ai-triage-panel">
+        <div class="triage-header">
+          <div class="triage-title-group">
+            <span id="triage-badge" class="triage-badge">CRITICAL</span>
+            <h2 id="triage-title" style="font-size: 1.1rem; letter-spacing: 1px;">ACUTE HYPOXIC EVENT</h2>
+          </div>
+          <span id="triage-engine" class="triage-engine-badge">⚡ NVIDIA NIM / OFFLINE SURGEON</span>
+        </div>
+
+        <div class="triage-body">
+          <div>
+            <div class="checklist-title">CLINICAL ASSESSMENT & DIAGNOSIS</div>
+            <p id="triage-diagnosis" class="triage-diagnosis">
+              Biometric analysis detected critical oxygen desaturation. Immediate life-support action required.
+            </p>
+          </div>
+
+          <div class="checklist">
+            <div class="checklist-title">TACTILE & COUNTERMEASURE CHECKLIST</div>
+            <ul id="triage-actions-list">
+              <li>Engage 100% emergency O2 flow on suit regulator.</li>
+              <li>Inspect suit visor seal and umbilical quick-disconnect valve.</li>
+              <li>Halt all EVA physical tasks immediately and tether to bulkhead.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- AI Margin of Error & Clinical Disclaimer -->
+        <div class="triage-disclaimer">
+          ⚠️ <strong>AI AUTONOMOUS TRIAGE NOTICE:</strong> Algorithmic Decision Support (Estimated Model Error Margin: ±4.2% • Confidence: 95.8%). Telemetry findings must be clinically correlated with crew physical examination and Earth Ground Flight Surgeon review when communication latency permits.
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; flex-wrap: wrap;">
+          <button id="btn-silence-alarm" class="btn" style="border-color: #ffaa00; color: #ffd700;" title="Siren Sesini Sustur">
+            🔕 SILENCE KLAXON
+          </button>
+          <button id="btn-triage-chat" class="btn btn-chat">
+            💬 CONSULT AI SURGEON
+          </button>
+          <button id="btn-triage-sanctuary" class="btn btn-sanctuary" style="display: none;">
+            🧘 LAUNCH SANCTUARY PROTOCOL
+          </button>
+          <button id="btn-dismiss-alert" class="btn">
+            ACKNOWLEDGE & DISMISS
+          </button>
+        </div>
+      </section>
+
+      <!-- Live Biometric Cards Grid -->
+      <section class="vitals-grid">
+        <!-- 1. Heart Rate -->
+        <div class="card card-heart">
+          <div class="card-header">
+            <span class="card-title">HEART RATE</span>
+            <span id="heart-icon" class="card-icon" style="color: var(--red);">❤️</span>
+          </div>
+          <div class="vital-value-wrap">
+            <span id="val-hr" class="vital-value">72</span>
+            <span class="vital-unit">BPM</span>
+          </div>
+          <div class="vital-bar">
+            <div id="bar-hr" class="vital-bar-fill" style="width: 45%;"></div>
+          </div>
+        </div>
+
+        <!-- 2. Blood Oxygen (SpO2) & Atmospheric Concentration -->
+        <div class="card card-oxygen">
+          <div class="card-header">
+            <span class="card-title">BLOOD OXYGEN (SPO2)</span>
+            <span class="card-icon" style="color: var(--cyan);">🫁</span>
+          </div>
+          <div class="vital-value-wrap">
+            <span id="val-o2" class="vital-value">98.5%</span>
+            <span class="vital-unit">SAT</span>
+          </div>
+          <div class="vital-bar">
+            <div id="bar-o2" class="vital-bar-fill" style="width: 98%;"></div>
+          </div>
+          <div class="vital-sub-indicators">
+            <span>FiO2: <strong id="val-ambient-o2">20.9%</strong></span>
+            <span>ppO2: <strong id="val-ppo2">21.2 kPa</strong></span>
+          </div>
+        </div>
+
+        <!-- 3. Autonomic Stress Index -->
+        <div class="card card-stress">
+          <div class="card-header">
+            <span class="card-title">AUTONOMIC STRESS (HRV)</span>
+            <span class="card-icon" style="color: var(--purple);">🧠</span>
+          </div>
+          <div class="vital-value-wrap">
+            <span id="val-stress" class="vital-value">22</span>
+            <span class="vital-unit">/ 100</span>
+          </div>
+          <div class="vital-bar">
+            <div id="bar-stress" class="vital-bar-fill" style="width: 22%;"></div>
+          </div>
+        </div>
+
+        <!-- 4. ECLSS Atmosphere (CO2) -->
+        <div class="card card-cabin">
+          <div class="card-header">
+            <span class="card-title">SUIT / CABIN CO2</span>
+            <span class="card-icon" style="color: var(--green);">🌿</span>
+          </div>
+          <div class="vital-value-wrap">
+            <span id="val-co2" class="vital-value">420</span>
+            <span class="vital-unit">PPM</span>
+          </div>
+          <div class="vital-bar">
+            <div id="bar-co2" class="vital-bar-fill" style="width: 25%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Multimodal Apple Watch ECG & Optical Computer Vision HUD -->
+      <section class="multimodal-grid">
+        <!-- 1. Apple Watch Electrical Heart Sensor (Lead I ECG) -->
+        <div class="card ecg-card">
+          <div class="card-header">
+            <div>
+              <span class="card-title">⚡ APPLE WATCH ELECTRICAL HEART SENSOR (ECG LEAD I)</span>
+              <span class="card-subtitle">Continuous 512Hz Digital Crown Waveform</span>
+            </div>
+            <span id="val-ecg-class" class="ecg-status-badge status-sinus">🟢 SINUS RHYTHM</span>
+          </div>
+          <div class="ecg-canvas-wrap">
+            <canvas id="canvas-ecg"></canvas>
+          </div>
+          <div class="ecg-footer">
+            <span>R-R: <strong id="val-rr-int">833ms</strong></span>
+            <span>PR: <strong>160ms</strong></span>
+            <span>QRS: <strong>88ms</strong></span>
+            <span id="val-ecg-lead" style="color: var(--cyan);">LEAD I (LA-RA)</span>
+          </div>
+        </div>
+
+        <!-- 2. Optical Computer Vision Helmet/Cabin Camera Card -->
+        <div class="card vision-card">
+          <div class="card-header">
+            <div>
+              <span class="card-title">👁️ ASTRONAUT & CABIN COMPUTER VISION HUD</span>
+              <span class="card-subtitle">Live Facial Biometrics & Environmental Optical Tracking</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="cv-mode-indicator" class="cv-mode-tag">👤 FACE MODE</span>
+              <span id="val-cam-expr" class="cv-status-badge status-alert">● ALERT / NOMINAL</span>
+            </div>
+          </div>
+          <div class="vision-body">
+            <div class="vision-cam-preview">
+              <video id="cv-video" autoplay playsinline muted style="display:none;"></video>
+              <canvas id="cv-canvas" width="130" height="130"></canvas>
+              <div id="cam-overlay-scanline" class="cam-scanline"></div>
+              <div id="cam-overlay-crosshair" class="cam-crosshair"></div>
+              <div id="cam-overlay-label" class="cam-label">CAM-01 • HELMET</div>
+            </div>
+            <div class="vision-metrics-list">
+              <div class="vision-metric-row" id="row-metric-1">
+                <span id="lbl-metric-1" class="v-label">FACIAL PERFUSION:</span>
+                <strong id="val-cam-pallor" class="v-val normal">NORMAL</strong>
+              </div>
+              <div class="vision-metric-row" id="row-metric-2">
+                <span id="lbl-metric-2" class="v-label">DROWSINESS (PERCLOS):</span>
+                <div class="perclos-bar-wrap">
+                  <div id="bar-cam-perclos" class="perclos-bar-fill" style="width: 8%;"></div>
+                </div>
+                <strong id="val-cam-perclos" class="v-val">0.08</strong>
+              </div>
+              <div class="vision-metric-row" id="row-metric-3">
+                <span id="lbl-metric-3" class="v-label">OCULAR GAZE:</span>
+                <strong id="val-cam-gaze" class="v-val">FOCUSED</strong>
+              </div>
+              <div class="vision-metric-row" id="row-metric-4">
+                <span id="lbl-metric-4" class="v-label">PUPIL / MOTION:</span>
+                <strong id="val-cam-pupil" class="v-val">3.6 mm</strong>
+              </div>
+            </div>
+          </div>
+          <!-- Live Camera Activation Controls -->
+          <div class="vision-controls-bar">
+            <button id="btn-toggle-cam" class="btn btn-sm btn-cam" title="Activate live webcam or phone camera">
+              📷 Start Live Camera
+            </button>
+            <button id="btn-switch-cam-mode" class="btn btn-sm" title="Toggle between Astronaut Face Tracking and Cabin Environment Tracking">
+              🔄 Switch to Cabin Scan
+            </button>
+            <span id="cam-feed-status" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);">
+              Camera Standby
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Adaptive Spaceflight Tuning Control -->
+      <section class="card adaptive-panel">
+        <div class="card-header">
+          <div>
+            <span class="card-title">🧬 ADAPTIVE PHYSIOLOGICAL TUNING</span>
+            <div id="adaptive-status-badge" style="font-size: 0.8rem; color: var(--cyan); margin-top: 2px;">
+              Standard Deep-Space Cruise Envelope • <span style="font-size: 0.65rem; color: #ffe066; font-family: var(--font-mono);">AI Modeled (Variance ±5%)</span>
+            </div>
+          </div>
+          <div class="phase-buttons">
+            <button class="btn-phase active" data-phase="TRANSIT">🚀 TRANSIT</button>
+            <button class="btn-phase" data-phase="EVA">👨‍🚀 EVA (SPACETASK)</button>
+            <button class="btn-phase" data-phase="REST_CYCLE">🛌 SLEEP CYCLE</button>
+          </div>
+        </div>
+
+        <div class="adaptive-metrics-grid">
+          <div class="adaptive-item">
+            <span class="adaptive-label">DYNAMIC HR CEILING</span>
+            <span id="adapt-hr-max" class="adaptive-val">115 BPM</span>
+          </div>
+          <div class="adaptive-item">
+            <span class="adaptive-label">DYNAMIC MIN SPO2</span>
+            <span id="adapt-o2-min" class="adaptive-val">92.0%</span>
+          </div>
+          <div class="adaptive-item">
+            <span class="adaptive-label">DYNAMIC STRESS CAP</span>
+            <span id="adapt-stress-max" class="adaptive-val">78 / 100</span>
+          </div>
+          <div class="adaptive-item">
+            <span class="adaptive-label">ADAPTIVE BREATHING RHYTHM</span>
+            <span id="adapt-breathing" class="adaptive-val" style="color: var(--purple);">BOX (4s-4s-4s)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Real-Time Telemetry Curve Graphs -->
+      <section class="charts-container">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">HEART RATE TELEMETRY TREND</span>
+            <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--red);">40 RPM</span>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="canvas-hr"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <span class="chart-title">BLOOD OXYGEN (SPO2) TREND</span>
+            <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan);">40 RPM</span>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="canvas-o2"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Biometric Streamer Mode -->
+      <section class="phone-streamer-drawer">
+        <div class="streamer-info">
+          <h3>📱 BROWSER BIOMETRIC STREAMER (40 RPM)</h3>
+          <p id="streamer-status-text">Use this device as an active biometric source to stream simulated biometrics to the server and VR headset.</p>
+        </div>
+
+        <div class="scenario-buttons">
+          <button class="btn-scenario active" data-scenario="1">🟢 1. Nominal Cruise</button>
+          <button class="btn-scenario" data-scenario="2">🔴 2. Hypoxia & Puncture</button>
+          <button class="btn-scenario" data-scenario="3">⚡ 3. Paroxysmal AFib</button>
+          <button class="btn-scenario" data-scenario="4">🟣 4. Hypercapnia (3400 PPM)</button>
+          <button class="btn-scenario" data-scenario="5">👁️ 5. Microsleep Collapse</button>
+          <button class="btn-scenario" data-scenario="6">🌀 6. SAS Motion Sickness</button>
+          <button class="btn-scenario" data-scenario="7">🔥 7. EVA Heat Stroke</button>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="btn-toggle-streamer" class="btn">
+            START STREAMING FROM THIS DEVICE (40 RPM)
+          </button>
+          <button id="btn-test-alarm" class="btn" style="border-color: var(--red); color: #fff; background: rgba(255, 51, 102, 0.2);" title="Test Piercing Master Caution Siren">
+            🚨 TEST MASTER ALARM
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT COLUMN: Integrated AI Space Flight Surgeon Console -->
+    <aside id="view-chat" class="ai-surgeon-console">
+      <div class="surgeon-card">
+
+        <!-- Surgeon Header -->
+        <div class="surgeon-header">
+          <div class="surgeon-title">
+            <span class="surgeon-avatar">👨‍⚕️</span>
+            <div>
+              <h3>CARDIASTRACONT CHIEF FLIGHT SURGEON</h3>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span id="chat-engine-status" class="surgeon-status-badge">
+                  ● ACTIVE AI COPILOT • ONLINE
+                </span>
+                <span class="surgeon-sub-disclaimer">AI Decision Support • Margin of Error: ±3-5%</span>
+              </div>
+            </div>
+          </div>
+          <div class="surgeon-actions-bar">
+            <button id="btn-speak-last" class="btn btn-sm btn-tts-action" title="Son AI Yanıtını Seslendir (İstendiğinde Konuşur)">
+              🗣️ Seslendir (TTS)
+            </button>
+            <button id="btn-stop-tts" class="btn btn-sm btn-tts-stop" style="display:none;" title="Sesli Okumayı Durdur">
+              ⏹️ Durdur
+            </button>
+            <button id="btn-toggle-voice" class="btn btn-sm btn-voice active" title="Otomatik Sesli Okuma Modu">
+              🔊 OTO TTS
+            </button>
+            <button id="btn-quick-audit" class="btn btn-sm" title="Audit and clinically review live vitals">
+              🩺 Vitals
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Engine Live Multimodal Telemetry Awareness Bar -->
+        <div class="chat-telemetry-strip">
+          <span title="Telemetry available to AI upon request">📡 SENSORS:</span>
+          <span>❤️ <strong id="chat-vitals-hr">72</strong> BPM</span>
+          <span>⚡ <strong id="chat-vitals-ecg">SINUS</strong></span>
+          <span>🫁 <strong id="chat-vitals-o2">98.5</strong>%</span>
+          <span>🌬️ <strong id="chat-vitals-ambient-o2">20.9</strong>%</span>
+          <span>👁️ <strong id="chat-vitals-cam">ALERT</strong></span>
+        </div>
+
+        <!-- Suggested Prompt Pills -->
+        <div class="quick-prompts-bar">
+          <button class="quick-pill" data-prompt="Hello Doctor, introduce yourself and your role on this Mars mission.">👋 Introduce Yourself</button>
+          <button class="quick-pill" data-prompt="Please audit and analyze my current live vital signs.">🩺 Audit My Vitals</button>
+          <button class="quick-pill" data-prompt="Review my live camera computer vision biomarkers and tell me my facial perfusion and alertness state.">👁️ Audit Live Camera Feed</button>
+          <button class="quick-pill" data-prompt="Review our cabin environment optical scan: check illuminance, structural motion, and atmospheric stability.">🛰️ Audit Cabin Environment</button>
+          <button class="quick-pill" data-prompt="Analyze my Apple Watch ECG rhythm. Is there any evidence of arrhythmia or AFib?">⚡ Check ECG Rhythm</button>
+          <button class="quick-pill" data-prompt="Audit cabin oxygen concentration and my SpO2 level. Are we safe from hypoxia?">🫁 Check O2 & Hypoxia</button>
+          <button class="quick-pill" data-prompt="Deep research: What are the five NASA Human Research Program hazards of spaceflight (RIDGE framework)?">🔬 NASA HRP Hazards (RIDGE)</button>
+          <button class="quick-pill" data-prompt="Deep research: How does the Canadian Space Agency monitor radiation to protect astronaut health?">🔬 CSA Radiation Monitoring</button>
+          <button class="quick-pill" data-prompt="Research: Why do we conduct science experiments in space according to CSA life sciences?">📚 CSA Space Science Rationale</button>
+          <button class="quick-pill" data-prompt="Short research: What is the NASA-STD-3001 emergency oxygen partial pressure threshold?">📚 NASA-STD-3001 O2 Threshold</button>
+          <button class="quick-pill" data-prompt="Conduct a deep research dossier on galactic cosmic radiation risks and biological shielding strategies for a 500-day Mars transit.">🔬 Deep Research (Mars Radiation)</button>
+          <button class="quick-pill" data-prompt="Doctor, review our Emergency Medical Kit radiation degradation. How should we adjust medication dosing during this deep-space cruise?">💊 EMK Drug Potency Advice</button>
+          <button class="quick-pill" data-prompt="Doctor, explain why autonomous AI flight surgery is clinically necessary given the 14-minute Earth-Mars communication delay.">⏱️ Comms Latency Rationale</button>
+        </div>
+
+        <!-- Scrollable Messages Container -->
+        <div id="chat-messages" class="chat-messages-container">
+          <div class="chat-bubble ai" id="greeting-bubble">
+            <div class="bubble-author">
+              <span>Cardiastracont Flight Surgeon</span>
+              <span class="ai-badge">LIVE AI AGENT</span>
+              <button type="button" class="btn-bubble-tts" id="btn-greeting-tts" title="Bu karşılama mesajını seslendir (TTS)">🔊 Dinle (TTS)</button>
+            </div>
+            <p>Greetings, Commander. I am Cardiastracont AI, your onboard Chief Flight Surgeon for this Mars transit. Ask me any medical or mission question. I answer plain questions directly, and will invoke the <code>[REQUEST_VITALS]</code> telemetry protocol method when you request an audit or if acute symptoms arise.</p>
+            <div class="bubble-meta">
+              <span>AI Engine: Live System</span> • <span>Method: None (Direct Conversation)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Bar with Push-to-Talk Speech Recognition -->
+        <form id="chat-form" class="chat-input-form">
+          <button type="button" id="btn-voice-input" class="btn-mic" title="Speak to Cardiastracont (Microphone Voice Input)">
+            🎙️
+          </button>
+          <input type="text" id="chat-input" placeholder="Ask medical question or click 🎙️ to speak..." autocomplete="off" />
+          <button type="submit" id="btn-send-chat" class="btn btn-chat-send">
+            SEND
+          </button>
+        </form>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Interactive Sanctuary Mode Modal (Fullscreen Guided Box Breathing) -->
+  <div id="sanctuary-modal" class="sanctuary-modal">
+    <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--purple); letter-spacing: 2px;">
+      PSYCHOLOGICAL COUNTERMEASURE SANCTUARY
+    </div>
+
+    <div class="breathing-circle-wrap">
+      <div id="breathing-circle" class="breathing-circle"></div>
+    </div>
+
+    <div id="sanctuary-phase" class="sanctuary-phase">INHALE DEEPLY</div>
+    <div id="sanctuary-tip" class="sanctuary-tip">Fill lungs through your nose using your diaphragm.</div>
+    <div id="sanctuary-countdown" class="sanctuary-countdown">TIME REMAINING: 60s</div>
+
+    <button id="btn-close-sanctuary" class="btn sanctuary-close-btn">
+      EXIT SANCTUARY & RESTORE HUD
+    </button>
+  </div>
+
+  <!-- Earth-Mars Comms Latency Simulator Modal -->
+  <div id="latency-modal" class="app-modal">
+    <div class="modal-dialog latency-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge-cyan">SPEED-OF-LIGHT RELATIVISTIC DELAY</span>
+          <h2>🌍 EARTH-MARS COMMS LATENCY SIMULATOR</h2>
+        </div>
+        <button id="btn-close-latency" class="btn-modal-close" title="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-intro">
+          Deep-space missions beyond Low Earth Orbit experience significant radio transmission delays dictated by the speed of light (\(c \approx 300,000 \text{ km/s}\)). This makes real-time ground flight surgeon intervention impossible during acute emergencies.
+        </p>
+
+        <!-- Distance / Latency Presets -->
+        <div class="latency-presets-bar">
+          <button class="btn-latency-preset" data-delay="0.25" data-label="0.2s (LEO / ISS)">🛰️ LEO / ISS (0.2s)</button>
+          <button class="btn-latency-preset" data-delay="1.3" data-label="1.3s (Moon)">🌕 Lunar Gateway (1.3s)</button>
+          <button class="btn-latency-preset" data-delay="258" data-label="4.3m (Mars Closest)">🔴 Mars Closest (4.3 min)</button>
+          <button class="btn-latency-preset active" data-delay="852" data-label="14.2m (Mars Avg)">🚀 Mars Average (14.2 min)</button>
+          <button class="btn-latency-preset" data-delay="1344" data-label="22.4m (Mars Max)">☀️ Solar Conjunction (22.4 min)</button>
+        </div>
+
+        <!-- Latency Display HUD -->
+        <div class="latency-status-hud">
+          <div class="latency-stat-box">
+            <span class="stat-lbl">ONE-WAY LIGHT TIME</span>
+            <span id="stat-owlt" class="stat-val text-cyan">14 min 12 sec</span>
+          </div>
+          <div class="latency-stat-box">
+            <span class="stat-lbl">ROUND-TRIP CONVERSATION BUFFER</span>
+            <span id="stat-rtlt" class="stat-val text-orange">28 min 24 sec</span>
+          </div>
+          <div class="latency-stat-box">
+            <span class="stat-lbl">EARTH DISTANCE</span>
+            <span id="stat-dist" class="stat-val">225,000,000 km</span>
+          </div>
+        </div>
+
+        <!-- Transmission Buffer Simulator -->
+        <div class="uplink-test-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: #fff; font-size: 0.88rem;">📡 HOUSTON DSN (DEEP SPACE NETWORK) UPLINK BUFFER</strong>
+            <span id="uplink-badge" class="uplink-idle-badge">IDLE • STANDBY</span>
+          </div>
+          <p id="uplink-desc" style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">
+            Test dispatching an emergency medical telemetry packet to NASA Johnson Space Center Mission Control.
+          </p>
+
+          <div class="uplink-progress-wrap">
+            <div id="uplink-progress-bar" class="uplink-progress-fill" style="width: 0%;"></div>
+          </div>
+          <div id="uplink-timer" class="uplink-timer-txt">Buffer empty. Ready for transmission.</div>
+
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button id="btn-trigger-uplink" class="btn btn-cyan">
+              🚀 DISPATCH TELEMETRY TO HOUSTON
+            </button>
+            <button id="btn-cancel-uplink" class="btn" style="display: none;">
+              CANCEL UPLINK
+            </button>
+          </div>
+        </div>
+
+        <!-- NASA Exploration Medical Capability (ExMC) Callout -->
+        <div class="exmc-callout">
+          <strong>NASA Exploration Medical Capability (ExMC) Level 4/5 Standard:</strong>
+          During acute cardiac dysrhythmias, sudden cabin decompression, or hypoxic events, waiting 28 minutes for Houston consultation results in irreversible astronaut mortality. <strong>Cardiastracont’s local autonomic AI engine functions as an immediate onboard Chief Flight Surgeon</strong>, executing RAG-verified clinical countermeasures in milliseconds.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deep-Space Emergency Medical Kit (EMK) & Radiation Pharmacology Modal -->
+  <div id="emk-modal" class="app-modal">
+    <div class="modal-dialog emk-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge-purple">NASA HRP PHARMACEUTICAL RESILIENCY</span>
+          <h2>💊 EMERGENCY MEDICAL KIT (EMK) & RADIATION PHARMACOLOGY</h2>
+        </div>
+        <button id="btn-close-emk" class="btn-modal-close" title="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-intro">
+          Galactic Cosmic Radiation (GCR) and Solar Particle Events (SPE) ionize and chemically degrade onboard pharmaceuticals over multi-year Mars missions. This simulator models clinical potency decay and calculates adjusted dosage requirements per NASA Human Research Program (HRP) guidelines.
+        </p>
+
+        <!-- Mission Transit Day Slider -->
+        <div class="emk-slider-card">
+          <div class="slider-header">
+            <span>MISSION TRANSIT TIMELINE: <strong id="lbl-mission-day" class="text-cyan">DAY 180</strong> / 500 DAYS</span>
+            <div class="emk-day-pills">
+              <button class="btn-emk-day" data-day="0">Day 0 (Launch)</button>
+              <button class="btn-emk-day" data-day="90">Day 90</button>
+              <button class="btn-emk-day active" data-day="180">Day 180 (Mid-Transit)</button>
+              <button class="btn-emk-day" data-day="360">Day 360</button>
+              <button class="btn-emk-day" data-day="500">Day 500 (Mars Return)</button>
+            </div>
+          </div>
+          <input type="range" id="emk-day-slider" min="0" max="500" value="180" class="emk-range-slider" />
+          <div class="slider-scale-labels">
+            <span>Launch (100% Potency)</span>
+            <span>Earth-Mars Equidistant</span>
+            <span>Mars Orbit / Arrival</span>
+          </div>
+        </div>
+
+        <!-- Drug Inventory Table -->
+        <div class="emk-table-wrap">
+          <table class="emk-table">
+            <thead>
+              <tr>
+                <th>MEDICATION & CLASS</th>
+                <th>PRIMARY INDICATION</th>
+                <th>GCR DECAY RATE</th>
+                <th>CURRENT POTENCY</th>
+                <th>CLINICAL ACTION / COMPENSATION</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="emk-drugs-tbody">
+              <!-- Dynamically populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Clinical Pharmacology Guidance Banner -->
+        <div id="emk-clinical-guidance" class="emk-guidance-box">
+          <!-- Dynamically updated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
